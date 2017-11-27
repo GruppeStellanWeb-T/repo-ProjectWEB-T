@@ -20,7 +20,7 @@ function spielerSpeichern(){
 
 function erneutSpielerEingeben(){
   //Warum?
-  alert("ficken");
+  alert("lalala");
 	//Warum JQuery?
   $("#myModal").modal('show');
 

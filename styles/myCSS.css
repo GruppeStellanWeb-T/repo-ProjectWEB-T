@@ -1,19 +1,29 @@
 .myButtonGreen {
 color:green;
-
-
 }
+
 .myButtonYellow {
 color:rgb(226, 187, 89) !important;
 }
-.myButtonÄndern{
+
+.myButtonChange{
   margin-top: 30px;
   float: left;
   display: table;
   margin:0 auto;
 }
+
 .myButtonModal{
   margin: 0 auto;
   margin-top:20px;
   display: table;
+}
+
+body {
+  background-color: aqua;
+  background: url("../BG.jpg") no-repeat center center fixed;
+  -webkit-background-size:cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
