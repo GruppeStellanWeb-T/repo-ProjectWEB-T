@@ -21,9 +21,15 @@ color:rgb(226, 187, 89) !important;
 
 body {
   background-color: aqua;
-  background: url("../BG.jpg") no-repeat center center fixed;
+  background:aqua url("../BG.jpg") no-repeat center center fixed;
+  /*Browser anpassungen*/
   -webkit-background-size:cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+
+  /*Schriftart Style*/
+  font-family: 'Spectral SC', serif;
+  /*font-size: 48px;*/
+  /*text-shadow: 4px 4px 4px #aaa;*/
 }
