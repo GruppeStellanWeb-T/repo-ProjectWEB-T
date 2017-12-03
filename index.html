@@ -32,66 +32,69 @@
 
 
   <body>
-    <div class="myButtonChange">
-      <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="erneutSpielerEingeben()">Spieler ändern</button>
-    </div>
+	  <div class="myButtonChange">
+		  <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="erneutSpielerEingeben()">Spieler ändern</button>
+	  </div>
 
 
-    <h1> SCHIFFE VERSENKEN!</h1>
-    <h3>Spieler1: </h3>
-    <div id="ausgabeSpieler1"></div>
+	  <h1> SCHIFFE VERSENKEN!</h1>
+	  <h3>Spieler1: </h3>
+	  <div id="ausgabeSpieler1"></div>
 
 
-    <h3>Spieler2: </h3>
-    <div id="ausgabeSpieler2"></div>
+	  <h3>Spieler2: </h3>
+	  <div id="ausgabeSpieler2"></div>
 
 
-    <div id="gameBoardAusgabe">
+	  <div id="gameBoardAusgabe">
 
 
 
-    </div>
+	  </div>
 
-    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            <h4 class="modal-title" id="myModalLabel">Spieler</h4>
-          </div>
-<!-- ersten Spieler hinzufügen -->
-            <div class="modal-body">
-              <div>Spieler 1 hinzufügen</div>
-              <div>
-                <div class="input-group">
-                  <span class="input-group-addon"></span>
-                  <input id= "nameSpieler1" type="text" class="form-control" placeholder="Name">
-                </div>
-              </div>
-            </div>
-<!--zweiter SPieler hinzufügen-->
-          <div class="modal-body">
-            <div>Spieler 2 hinzufügen</div>
-            <div>
-              <div class="input-group">
-                <span class="input-group-addon"></span>
-                <input id="nameSpieler2" type="text" class="form-control" placeholder="Name">
-              </div>
-            </div>
+	  <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg">
+			  <div class="modal-content">
+				  <div class="modal-header">
+					  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						  <span aria-hidden="true">&times;</span>
+					  </button>
+					  <h4 class="modal-title" id="myModalLabel">Spieler</h4>
+				  </div>
+				  <!-- ersten Spieler hinzufügen -->
+				  <div class="modal-body">
+					  <div>Spieler 1 hinzufügen</div>
+					  <div>
+						  <div class="input-group">
+							  <span class="input-group-addon"></span>
+							  <input id= "nameSpieler1" type="text" class="form-control" placeholder="Name">
+						  </div>
+					  </div>
+				  </div>
+				  <!--zweiter SPieler hinzufügen-->
+				  <div class="modal-body">
+					  <div>Spieler 2 hinzufügen</div>
+					  <div>
+						  <div class="input-group">
+							  <span class="input-group-addon"></span>
+							  <input id="nameSpieler2" type="text" class="form-control" placeholder="Name">
+						  </div>
+					  </div>
 
-            <div class="myButtonModal">
-              <button onclick="spielerSpeichern()" type="button" class="myButtonYellow btn btn-outline-success">hinzufügen</button>
-            </div>
-          </div>
-        </div>
-        </div>
-      </div>
+					  <div class="myButtonModal">
+						  <button onclick="spielerSpeichern()" type="button" class="myButtonYellow btn btn-outline-success">hinzufügen</button>
+					  </div>
+				  </div>
+			  </div>
+		  </div>
+	  </div>
+	  <div id="gb1"></div>
+	  <div id="gb2"></div>
 
-    <!-- jQuery first, then Tether, then Bootstrap JS. -->
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+	  <!-- jQuery first, then Tether, then Bootstrap JS. -->
+	  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+	  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
   </body>
 </html>
