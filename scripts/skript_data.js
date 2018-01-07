@@ -6,12 +6,15 @@ let gameBoard_My;
 let gameBoard_Enemy;
 var positionMemoryROW;
 var positionMemoryCOLUMN;
+let freeCell;
+let fullCell;
 
 var ships = {
   schlachtschiff: 5,
   kreuzer: 4,
   zerstörer: 3,
-  // u-boote: 2
+  uboote: 2,
+  schiffart: function() {return 1;}
 };
 
 var coordinatesInTableROW = [];
@@ -74,15 +77,15 @@ function makeBoard(boardID,size) {
 
 	//create cells
 	for ( var i = 0; i < size; i++) {
-		var row = document.createElement('tb');
+		var row = document.createElement('row');
 
 		for ( var j = 0; j < size; j++) {
-			var cell = document.createElement('tc');
+			var cell = document.createElement('cell');
 
 			//DEMO Start
 			//var cellText = document.createTextNode('cell is row: ' + i + ' column: ' + j );
 			var cellText = document.createTextNode(i+'|'+j);
-			//DEMO END
+      //DEMO END
 			cell.appendChild(cellText);
 			row.appendChild(cell);
 		}
@@ -112,7 +115,7 @@ function setShips(){
   if((coordinatesInTableROW[0] && coordinatesInTableCOLUMN[0])==null){
     //arrays mit den Größen der Schiffe. Kann man aber umstellen auf
     //Json- Bezug. Ist vielleicht schöner. Speicher wird damit gespart
-    let arrayOfShips = [5, 4, 3, 2];
+    let arrayOfShips = [5,4,3,2,4,3,2,3,2,2];
     //erstellt horizontal oder vertikal Positionierung
     alert("VOR DIRECTION IN SETSHIP");
     let direction = checkDirection();
@@ -120,10 +123,12 @@ function setShips(){
     //putBattleshipsInTable() in die Tabelle eingefügt werden.
     //@variable jsonCoordinates returned ein Json mit gültigen anfangs Koordinaten
     alert("JETZT HAB ICH EINE DIRECTION" + direction);
-    for(var i=1;i<10;i++){
+    for(var i=0;i<10;i++){
       let jsonCoordinates =  makeCoordinates(arrayOfShips[i], direction);
       alert("IN LOOP BEI SETSHIPS, KOORDINATE ERSTELLT");
-      putBattleshipsInTable(this.gameBoard, jsonCoordiates);
+      putBattleshipsInTable(this.gameBoard, jsonCoordinates);
+      alert("SCHIFF ERSTELLT UND EINGEFÜGT! SCHIFFGROESE: "+arrayOfShips[i]);
+      document.getElementById('gb1').innerHTML = this.gameBoard_My;
     }
   }
 }
@@ -152,7 +157,7 @@ alert("IN makeCoordinates");
                     row: randomROW,
                     column: randomCOLUMN,
                     direction: direction,
-                    size: shipsize
+                    size: shipSize
                   };
   }else{
     makeCoordinates(shipSize,direction);
@@ -170,6 +175,7 @@ function checkPositionIsOK(rowNumber, columnNumber, shipSize, direction){
       if(direction == 1){
           var flag = true;
           for(var i=0;i<shipSize;i++){
+            alert("aufruf für flag 1");
             flag = isFree(rowNumber, columnNumber+1);
           }
           return flag;
@@ -178,6 +184,7 @@ function checkPositionIsOK(rowNumber, columnNumber, shipSize, direction){
       else{
         var flag = true;
         for(var i=0;i<shipSize;i++){
+          alert("aufruf für flag 2");
           flag = isFree(rowNumber+1, columnNumber);
         }
         return flag;
@@ -191,18 +198,14 @@ function checkPositionIsOK(rowNumber, columnNumber, shipSize, direction){
 //zu prüfen. Alert("FEHLER IN ISFREE") nur zu Testzwecken.
 function isFree(rowNumber, columnNumber){
   alert("in isFree");
-  //let currentValue = this.gameBoard_My.board.getAttribute(0,5);
-/*
-  let currentValueROW = this.gameBoard_My.getElementsByTagName('table');
-  let currentValueCOLUMN = this.gameBoard_My.getElementsByTagName('tbody');
-  let currentCellValueROW = currentValueROW.getElementsByTagName("row:"+rowNumber);
-  let currentCellvalueCOLUMN = currentValueCOLUMN.getElementByTagName("column:"+columnNumber);
-*/
-  let currentValueROW = this.gameBoard_My.getElementsByTagName('tr')[1];
-  let currentValueCOLUMN = this.gameBoard_My.getElementsByTagName('tc')[0];
+  let table = this.gameBoard_My.getElementsByTagName('table')[0];
+  let tableBody = table.getElementsByTagName('tbody')[0];
+  let tableROWS = tableBody.getElementsByTagName('row')[rowNumber];
+  let rowElement= tableROWS.getElementsByTagName('cell')[columnNumber];
   //prüft ob ein "|" in der Zelle enthalten ist. "|" = leer, ansonsten ist es gefüllt.
-  alert("nach currentvalue in isFree "+ currentValueROW + ", " + currentValueCOLUMN);
-  if( currentValue.includes("|")){
+  alert("Elemente: ");
+  var cellText = rowElement.textContent;
+  if(cellText.includes("|")){
     return true;
   }else{
     return false;
@@ -215,7 +218,20 @@ function isFree(rowNumber, columnNumber){
 
 //FUNKTION UM DIE TABLLEN MIT DEN SCHIFFEN ZU FÜLLEN
 function putBattleshipsInTable(boardID, jsonCoordinates){
-  this.gameBoard_My.rows[jsonCoordinates.row].cells[jsonCoordinates.column].cellText.replaceData(0, 5, "X");
+  alert("IN PUTBATTLESHIP");
+  let table = this.gameBoard_My.getElementsByTagName('table')[0];
+  let tableBody = table.getElementsByTagName('tbody')[0];
+  let tableROWS = tableBody.getElementsByTagName('row')[jsonCoordinates.row];
+  let cellText = document.createTextNode('X');
+  tableROWS.getElementsByTagName('cell')[jsonCoordinates.column].data = cellText;
+
+  //for(var i=0;i<jsonCoordinates[size];i++){
+
+//  }
+
+}
+
+function putXinCell(rowNumber,columnNumber){
 
 }
 
