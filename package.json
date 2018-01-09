@@ -1,0 +1,20 @@
+{
+  "name": "limetv",
+  "version": "1.0.0",
+  "description": "A webapp to manage IPTV channels",
+  "main": "index.js",
+  "scripts": {
+    "test": "echoTest()"
+  },
+  "keywords": [
+    "IPTV",
+    "Manager"
+  ],
+  "author": "limecakeio",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2"
+  }
+}

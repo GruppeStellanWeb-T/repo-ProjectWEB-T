@@ -6,18 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Schiffeversenken Gruppe Stellan</title>
 
-
+    <link type="text/javascript" src="C:\Users\cango\GitHub\repo-ProjectWEB-T\Server">
+    <!-- Für die Websockets -->
+   <!--<script src="/socket.io/socket.io.js"></script>-->
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <!-- KEINE ABSOLUTEN PFAD ANGABEN!!!!!!!!!!!
     <link rel="stylesheet" href="C:\Users\cango\OneDrive\Dokumente\GitHub\STUFF\myCSS.css">
     -->
     <link rel="stylesheet" href="styles\myCSS.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
     <!-- SELBER FEHLER!!! KEINE ABSOLUTEN PFADE!!!!
     <script type="text/javascript" src="C:\Users\cango\OneDrive\Dokumente\GitHub\STUFF\skript_data.js"></script>
     -->
     <script type="text/javascript" src="scripts\skript_data.js"></script>
+    <!--<script type="text/javascript" src="scripts\highscore2.js"></script>-->
 
     <!-- Bild reinhauen, darf aber nicht im HEader sein sondern dort wo ich es einfügen will -->
     <!-- <img src="..." class="img-fluid pull-xs-left"> -->
@@ -35,6 +39,37 @@
 	  <div class="myButtonChange">
 		  <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="erneutSpielerEingeben()">Spieler ändern</button>
 	  </div>
+    <div class="myButtonChange">
+		  <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="loadHighScore()">HighScore anzeigen</button>
+	  </div>
+    <!-- <div class="myButtonChange">
+      <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" class ="input-group" onclick="fire()" >fire</button>
+    </div>
+-->
+    <div class="input-group">
+      <div>ROW</div>
+      <span class="input-group-addon"></span>
+      <input id="rowCoordinate" type="text" class="form-control" placeholder="KOORDINATE">
+    </div>
+
+    <div class="input-group">
+      <div>COLUMN</div>
+      <span class="input-group-addon"></span>
+      <input id="columnCoordinate" type="text" class="form-control" placeholder="KOORDINATE">
+    </div>
+    <div class="myButtonChange">
+     <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="fire()">Spieler ändern</button>
+   </div>
+
+   <div class="myButtonChange">
+    <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="setHighscore()">highscore setzen</button>
+  </div>
+   <div class="input-group">
+     <div>ROW</div>
+     <span class="input-group-addon"></span>
+     <input id="set_Highscore" type="text" class="form-control" placeholder="point">
+   </div>
+
 
 
 	  <h1> SCHIFFE VERSENKEN!</h1>
