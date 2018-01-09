@@ -4,8 +4,10 @@ let spieler1;
 let spieler2;
 let gameBoard_My;
 let gameBoard_Enemy;
-var positionMemoryROW;
-var positionMemoryCOLUMN;
+let positionMemoryROW;
+let rowCounter;
+let positionMemoryCOLUMN;
+let columnCounter;
 let freeCell;
 let fullCell;
 
@@ -63,6 +65,7 @@ function printOutSpielername(){
  */
 
 function makeBoard(boardID,size) {
+
   if(boardID=='gb1'){
     //reference, where to put field
     this.gameBoard_My = document.getElementById(boardID);
@@ -70,33 +73,36 @@ function makeBoard(boardID,size) {
     this.gameBoard_Enemy = document.getElementById(boardID);
   }
 
+//var board = document.getElementById(boardID);
 
-	//create elements <table> and a <tbody>
-	var tbl = document.createElement('table');
-	var tblBody = document.createElement('tbody');
+ 	//create elements <table> and a <tbody>
+ 	var tbl = document.createElement('table');
+ 	var tblBody = document.createElement('tbody');
 
-	//create cells
-	for ( var i = 0; i < size; i++) {
-		var row = document.createElement('row');
+ 	//create cells
+ 	for ( var i = 0; i < size; i++) {
+ 		var row = document.createElement('tr');
 
-		for ( var j = 0; j < size; j++) {
-			var cell = document.createElement('cell');
+ 		for ( var j = 0; j < size; j++) {
+ 			var cell = document.createElement('td');
 
-			//DEMO Start
-			//var cellText = document.createTextNode('cell is row: ' + i + ' column: ' + j );
-			var cellText = document.createTextNode(i+'|'+j);
-      //DEMO END
-			cell.appendChild(cellText);
-			row.appendChild(cell);
-		}
-		tblBody.appendChild(row);
-	}
-  tbl.appendChild(tblBody);
+ 			//DEMO Start
+ 			//var cellText = document.createTextNode('cell is row: ' + j + ' column: ' + i );
+ 			var cellText = document.createTextNode(i+" | "+j);
+ 			//DEMO END
+ 			cell.appendChild(cellText);
+ 			row.appendChild(cell);
+ 		}
+ 		tblBody.appendChild(row);
+ 	}
+ 	tbl.appendChild(tblBody);
+
   if(boardID=='gb1'){
     this.gameBoard_My.appendChild(tbl);
   }else{
     this.gameBoard_Enemy.appendChild(tbl);
   }
+
 	//DEMO Start
 	tbl.setAttribute('border','2');
 	//DEMO End
@@ -111,57 +117,75 @@ function makeBoard(boardID,size) {
  */
 
 function setShips(){
-  alert("HIER BIN ICH IN SETSHIPS");
+  //alert("HIER BIN ICH IN SETSHIPS");
+  this.positionMemoryROW = new Array();
+  this.rowCounter = 0;
+  this.positionMemoryCOLUMN = new Array(0);
+  this.columnCounter = 0;
   if((coordinatesInTableROW[0] && coordinatesInTableCOLUMN[0])==null){
     //arrays mit den Größen der Schiffe. Kann man aber umstellen auf
     //Json- Bezug. Ist vielleicht schöner. Speicher wird damit gespart
-    let arrayOfShips = [5,4,3,2,4,3,2,3,2,2];
-    //erstellt horizontal oder vertikal Positionierung
-    alert("VOR DIRECTION IN SETSHIP");
-    let direction = checkDirection();
+    let arrayOfShips = [2,2,2,2,3,3,3,4,4,5];
     //Schleife die bei jedem Schritt gültige Koordinaten stellt die dann durch
     //putBattleshipsInTable() in die Tabelle eingefügt werden.
     //@variable jsonCoordinates returned ein Json mit gültigen anfangs Koordinaten
-    alert("JETZT HAB ICH EINE DIRECTION" + direction);
-    for(var i=0;i<10;i++){
+    for(var i=0;i<7;i++){
+      //erstellt horizontal oder vertikal Positionierung
+      let direction = checkDirection();
+  //    alert("IM LOOP BEI SETSHIPS. DURCHLAUF: "+i);
       let jsonCoordinates =  makeCoordinates(arrayOfShips[i], direction);
-      alert("IN LOOP BEI SETSHIPS, KOORDINATE ERSTELLT");
-      putBattleshipsInTable(this.gameBoard, jsonCoordinates);
+//   alert("IN LOOP BEI SETSHIPS, GUELTIGE KOORDINATE ERSTELLT. ROW: "+jsonCoordinates.row+" COLUMN: "+jsonCoordinates.column+" DIRECTION: "+jsonCoordinates.shipDirection+" SIZE: "+jsonCoordinates.size);
+
+      putBattleshipsInTable(jsonCoordinates);
       alert("SCHIFF ERSTELLT UND EINGEFÜGT! SCHIFFGROESE: "+arrayOfShips[i]);
-      document.getElementById('gb1').innerHTML = this.gameBoard_My;
+
     }
   }
 }
 
+
 //Funktion die Koordinaten, durch Zufallszahlen erstellt
 function makeCoordinates(shipSize, direction){
-alert("IN makeCoordinates");
-  //Zufalllsazheln werden erstellt
-  var randomCOLUMN = Math.floor((Math.random() * 10) + 1);
-  var randomROW = Math.floor((Math.random() * 10) + 1);
+//alert("IN makeCoordinates");
+
+//  alert("BEI makeCoordinates            row:"+randomROW+" column:"+randomCOLUMN+" direction:"+direction);
   //prüft ob die Anfangskoordinaten gültig sind und fragt ab ob horizontal
   //oder vertikal eingefügt werden soll. Funktion checkPositionIsOK ist der
   //letzte Aufruf zum Bestätigen
-  alert("IN makeCoordinates VOR puttingOK. row: "+randomROW+", column: "+randomCOLUMN);
-  if(direction==1){
-    var puttingOK = checkPositionIsOK(randomROW, randomCOLUMN, shipSize, 1);
-  }else{
-    var puttingOK = checkPositionIsOK(randomROW, randomCOLUMN, shipSize, 0);
-  }
-  //abfrage was returned wird. Bei "True" von puttingOK wird das gültige JSON
-  //returned. Bei "false", geht die Funktion in die Rekursion und erstellt
-  //wieder neue Zufalsszahlen
-  if(puttingOK == true){
-    //JSON wird gefüllt mir Werten aus der Funktion makeCoordinates
-    return   freeCoordinates = {
-                    row: randomROW,
-                    column: randomCOLUMN,
-                    direction: direction,
-                    size: shipSize
-                  };
-  }else{
-    makeCoordinates(shipSize,direction);
-  }
+  //alert("IN makeCoordinates VOR puttingOK. ROW: "+randomROW+", COLUMN: "+randomCOLUMN);
+  var isOK = false;
+  var freeCoordinates = null;
+  while(isOK == false) {
+    //Zufalllsazheln werden erstellt
+    var randomCOLUMN = Math.floor((Math.random() * 10));
+    var randomROW = Math.floor((Math.random() * 10));
+  //  alert("IN LOOP MIT ROW:"+randomROW+"    COLUMN:"+randomCOLUMN);
+
+
+  	if(!memoryOfPositions(randomROW,randomCOLUMN)){
+          if(direction==1){
+            var puttingOK = checkPositionIsOK(randomROW, randomCOLUMN, shipSize, 1);
+          }else{
+            var puttingOK = checkPositionIsOK(randomROW, randomCOLUMN, shipSize, 0);
+          }
+
+          //abfrage was returned wird. Bei "True" von puttingOK wird das gültige JSON
+          //returned. Bei "false", geht die Funktion in die Rekursion und erstellt
+          //wieder neue Zufalsszahlen
+          if(puttingOK == true){
+            //JSON wird gefüllt mir Werten aus der Funktion makeCoordinates
+              freeCoordinates = {
+                            row: randomROW,
+                            column: randomCOLUMN,
+                            shipDirection: direction,
+                            size: shipSize
+                          };
+              isOK = true;
+            //  alert("KOORDINATEN:    row:"+freeCoordinates.row+"   column:"+freeCoordinates.column+"   direction:"+freeCoordinates.shipDirection+"   size:"+freeCoordinates.size);
+          }
+      }
+    }
+  return freeCoordinates;
 }
 
 //Funktion prüft ob Felder frei zu den passenden Anfangskoordinaten sind
@@ -169,14 +193,23 @@ alert("IN makeCoordinates");
 //@return flag, gibt die Zelle an makeCoordinates() frei, als Startpunkt der
 //Positionierung
 function checkPositionIsOK(rowNumber, columnNumber, shipSize, direction){
-    alert("in checkPositionIsOK");
-    if(isFree(rowNumber, columnNumber)){
+    //alert("in checkPositionIsOK. ROW: "+rowNumber+"COLUMN: "+columnNumber+"SIZE: "+shipSize+"DIRECTION: "+direction);
+
+    //wenn Startkoordinaten frei und aussenrum alles frei ist kann angefangen werden,
+    //zu setzen
+    if(isFree(rowNumber, columnNumber) && checkAround(rowNumber, columnNumber)){
+      //alert("in checkPosition hinter if 1");
       //für horizontale Positionierung
       if(direction == 1){
           var flag = true;
           for(var i=0;i<shipSize;i++){
-            alert("aufruf für flag 1");
-            flag = isFree(rowNumber, columnNumber+1);
+    //        alert("aufruf für flag 1. DURCHLAUF:"+i);
+    //alert("in checkPosition vor if2")
+            if(isFree(rowNumber, columnNumber+i) && checkAround(rowNumber, columnNumber+i)){
+                        flag=true;;
+                  }else{
+                        flag=false;
+                  }
           }
           return flag;
       }
@@ -184,8 +217,12 @@ function checkPositionIsOK(rowNumber, columnNumber, shipSize, direction){
       else{
         var flag = true;
         for(var i=0;i<shipSize;i++){
-          alert("aufruf für flag 2");
-          flag = isFree(rowNumber+1, columnNumber);
+      //    alert("aufruf für flag 2. DURCHLAUF: "+i);
+          if(isFree(rowNumber+i, columnNumber) && checkAround(rowNumber+i, columnNumber)){
+                        flag=true;
+                }else{
+                        flag=false;
+                }
         }
         return flag;
       }
@@ -197,52 +234,130 @@ function checkPositionIsOK(rowNumber, columnNumber, shipSize, direction){
 //Funktion um einzelne Zellen durchzulaufen und sie auf "leere" bzw. "Vollheit"
 //zu prüfen. Alert("FEHLER IN ISFREE") nur zu Testzwecken.
 function isFree(rowNumber, columnNumber){
-  alert("in isFree");
-  let table = this.gameBoard_My.getElementsByTagName('table')[0];
-  let tableBody = table.getElementsByTagName('tbody')[0];
-  let tableROWS = tableBody.getElementsByTagName('row')[rowNumber];
-  let rowElement= tableROWS.getElementsByTagName('cell')[columnNumber];
+
+  if(rowNumber<0 || rowNumber>9 || columnNumber<0 || columnNumber>9){
+    return false;
+  }
+
+  if((typeof this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber]) === undefined){
+    alert("hier drinne amk");
+  }else if (typeof this.gameBoard_My.getElementsByTagName('table')[0] === undefined) {
+    alert("hier drinne amk");
+  }
+
+  //alert("BEI isFree           ROW:"+rowNumber+" COLUMN:"+columnNumber);
+//  alert("in isFree. ROW: "+rowNumber+" COLUMN: "+columnNumber);
+  let rowElement = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber];
+  //alert("typ:"+(rowElement.nodeValue));
   //prüft ob ein "|" in der Zelle enthalten ist. "|" = leer, ansonsten ist es gefüllt.
-  alert("Elemente: ");
-  var cellText = rowElement.textContent;
-  if(cellText.includes("|")){
-    return true;
+  //alert("CELLTEXT: "+cellText);
+  if(rowElement != undefined) {
+    //alert("RETURNED TRUE AUS ISFREE");
+    if(rowElement.textContent.includes("X")){
+      return false;
+    }else{
+      return true;
+    }
   }else{
     return false;
   }
-  alert("FEHLER IN ISFREE");
+
+//  alert("FEHLER IN ISFREE");
   //@return null, nur zur Sicherheit. Theoretisch sollte es nicht aufgerufen werden
   return null;
 }
 
 
-//FUNKTION UM DIE TABLLEN MIT DEN SCHIFFEN ZU FÜLLEN
-function putBattleshipsInTable(boardID, jsonCoordinates){
-  alert("IN PUTBATTLESHIP");
+
+function checkAround(rowNumber, columnNumber){
+  //alert("IN CHECKAROUND. ROW: "+rowNumber+" COLUMN: "+columnNumber);
+/*
   let table = this.gameBoard_My.getElementsByTagName('table')[0];
   let tableBody = table.getElementsByTagName('tbody')[0];
-  let tableROWS = tableBody.getElementsByTagName('row')[jsonCoordinates.row];
-  let cellText = document.createTextNode('X');
-  tableROWS.getElementsByTagName('cell')[jsonCoordinates.column].data = cellText;
-
-  //for(var i=0;i<jsonCoordinates[size];i++){
-
-//  }
-
+  let tableROWS = tableBody.getElementsByTagName('tr')[rowNumber];
+  let rowElement= tableROWS.getElementsByTagName('td')[columnNumber];
+*/
+  let positionArrayOfCorrectness = [];
+  let positionsAroundCell = [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]];
+  for(var i=0;i<8;i++){
+        //alert("POSITION CHECKAROUND I:"+i+" ROW:"+(rowNumber + positionsAroundCell[i][0])+" COLUMN:"+(columnNumber + positionsAroundCell[i][1]));
+      //  var currentCell = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber + positionsAroundCell[i][0]].getElementsByTagName('td')[columnNumber + positionsAroundCell[i][1]];
+        if(isFree(rowNumber + positionsAroundCell[i][0], columnNumber + positionsAroundCell[i][1])) {
+                        positionArrayOfCorrectness.push(true);
+        }else{
+                        positionArrayOfCorrectness.push(false);
+        }
+  }
+  if(positionArrayOfCorrectness.includes(false)){
+    return false;
+  }else{
+    return true;
+  }
 }
 
-function putXinCell(rowNumber,columnNumber){
 
+//FUNKTION UM DIE TABLLEN MIT DEN SCHIFFEN ZU FÜLLEN
+function putBattleshipsInTable(jsonCoordinates){
+//  alert("IN PUTBATTLESHIP");
+
+  //alert("direction:"+jsonCoordinates.shipDirection);
+  //Zellen befüllen die horizontal angeordnet sind (Direction == 1)
+  //alert("DIRECTION IN PUTBATTLESHIP: "+jsonCoordinates.shipDirection+"    SIZE:"+jsonCoordinates.size);
+  if(jsonCoordinates.shipDirection == 1){
+    //  alert("IN LOOP BEI PUTBATTLESHIP (direction1). MIT SHIPSIZE: "+jsonCoordinates.size);
+      for(var i=0;i<jsonCoordinates.size;i++){
+      //  alert("X IN DIE ZELLE SCHREIBEN (Horizontal). DURCHLAUF:"+i);
+        markCellWithX(jsonCoordinates.row, jsonCoordinates.column + i);
+        //let tableCellNextSpace = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[jsonCoordinates.row].getElementsByTagName('td')[jsonCoordinates.column + i].appendChild(cellText);
+        //this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[jsonCoordinates.row].getElementsByTagName('td')[jsonCoordinates.column + i] = tableCellNextSpace;
+      }
+  }
+  //Zellen befüllen die vertikal angeordnet sind (Direction == 0)
+  else{
+      //alert("IN LOOP BEI PUTBATTLESHIP (direction0). MIT SHIPSIZE: "+jsonCoordinates.size);
+    for(var i=0;i<jsonCoordinates.size;i++){
+      //alert("X IN DIE ZELLE SCHREIBEN (Vertikal). DURCHLAUF:"+i);
+      markCellWithX(jsonCoordinates.row + i, jsonCoordinates.column);
+      //let tableCellNextSpace = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[jsonCoordinates.row + i].getElementsByTagName('td')[jsonCoordinates.column].appendChild(cellText);
+      //this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[jsonCoordinates.row + i].getElementsByTagName('td')[jsonCoordinates.column + i] = tableCellNextSpace;
+    }
+  }
 }
+
+function markCellWithX(rowNumber, columnNumber){
+  let cellText = document.createTextNode(" X");
+  if(rowNumber<0 || rowNumber>9 || columnNumber<0 || columnNumber>9){
+    alert("negativeZahl!! row:"+rowNumber+" columnNumber:"+columnNumber);
+  }else{
+  let tableCell = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].appendChild(cellText);
+  this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber] = tableCell;
+  }
+}
+
+/*
+  alert("WERT: "+tableCell.textContent);
+  let cell = tableCell.appendChild(cellText);
+  this.gameBoard_My.getElementsByTagName('table')[0] = table;
+  for(var i=0;i<cell.length;i++){
+    alert("KindTyp: "+cell[i]);
+  }
+  //alert(tableROWS.getElementsByTagName('td')[jsonCoordinates.column].data);
+  alert("HAT KINDER: "+table.textContent);
+*/
+
+
+
 
 //Funktion um die Direction zu erstellen. Erstellt eine Zufallszahl "random", bis 10.
 //bei gerader Zahl ist die Direction hrizontal, ansonsten vertikal
 function checkDirection(){
-  alert("IN CHECKDIRECTION");
+  //alert("IN CHECKDIRECTION");
   var random = Math.floor((Math.random() * 10) + 1);
   if((random%2) == 0){
+    //alert("IN DIRECTION MIT ERGEBNIS: 1");
     return 1;
   }else{
+    //alert("IN DIRECTION MIT ERGEBNIS: 0");
     return 0;
   }
 }
@@ -250,15 +365,19 @@ function checkDirection(){
 //Funktion um befüllte Zellen zu speichern um so das Positionieren zu vereinfachen
 //Hier werden natürlich nur die Anfangskoordinaten gespeichert.
 function memoryOfPositions(rowNumber, columnNumber){
-  if(this.positionMemoryROW.isInArray(rowNumber) && this.positionMemoryCOLUMN.isInArray(columnNumber)){
+  //alert("row:"+rowNumber+"    column:"+columnNumber);
+  if(this.positionMemoryROW.includes(rowNumber) && this.positionMemoryCOLUMN.includes(columnNumber)){
+    alert("false:"+this.positionMemoryROW);
     return false;
   }else{
     this.positionMemoryROW.push(rowNumber);
-    this.positionCOLUMN.isInArray.push(columnNumber);
+    this.positionMemoryCOLUMN.push(columnNumber);
+
+    alert("true:"+this.positionMemoryCOLUMN);
     return true;
   }
   //nur zu Sicherheit! Darf vom Code niemals erreicht werden.
-  alert("FEHLER IN MEMORYOFPOSITION");
+  //alert("FEHLER IN MEMORYOFPOSITION");
   return null;
 }
 
@@ -270,8 +389,8 @@ function memoryOfPositions(rowNumber, columnNumber){
 //Call-Funktion die auftaucht sobald die Seite fertig geladen ist. SetShips
 window.onload = function () {
 
-	makeBoard('gb1',10);
-	makeBoard('gb2',10);
+	makeBoard("gb1",10);
+	makeBoard("gb2",10);
   //Automatische Generieren der Schiffe in gameBoard_My
   setShips();
 };
