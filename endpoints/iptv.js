@@ -7,3 +7,5 @@ iptv.get('/ping', (req, res) => {
 });
 
 module.exports = iptv;
+
+//iptv.get

@@ -16,13 +16,13 @@ fire.post('/ping', (req, res) => {
   res.json({"message": "fire is ok"});
 });
 
-fire.post('/', (req, res) => {
+fire.post('/set_fire', (req, res) => {
   console.log(req.body);
   res.setHeader('Content-Type', 'application/json');
   res.json({'msg': 'success'});
 });
 
-fire.get('/getFire', (req, res) => {
+fire.get('/get_Fire', (req, res) => {
   res.json(coordinate);
 });
 

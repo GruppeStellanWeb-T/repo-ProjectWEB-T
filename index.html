@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="styles\myCSS.css">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+
     <!-- SELBER FEHLER!!! KEINE ABSOLUTEN PFADE!!!!
     <script type="text/javascript" src="C:\Users\cango\OneDrive\Dokumente\GitHub\STUFF\skript_data.js"></script>
     -->
@@ -42,42 +44,29 @@
     <div class="myButtonChange">
 		  <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="loadHighScore()">HighScore anzeigen</button>
 	  </div>
+
     <!-- <div class="myButtonChange">
       <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" class ="input-group" onclick="fire()" >fire</button>
     </div>
 -->
-    <div class="input-group">
-      <div>ROW</div>
-      <span class="input-group-addon"></span>
-      <input id="rowCoordinate" type="text" class="form-control" placeholder="KOORDINATE">
-    </div>
 
-    <div class="input-group">
-      <div>COLUMN</div>
-      <span class="input-group-addon"></span>
-      <input id="columnCoordinate" type="text" class="form-control" placeholder="KOORDINATE">
-    </div>
     <div class="myButtonChange">
-     <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="fire()">Spieler ändern</button>
+     <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="fire()">Fire</button>
    </div>
 
    <div class="myButtonChange">
-    <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="setHighscore()">highscore setzen</button>
+    <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="setHighscore">highscore setzen</button>
   </div>
-   <div class="input-group">
-     <div>ROW</div>
-     <span class="input-group-addon"></span>
-     <input id="set_Highscore" type="text" class="form-control" placeholder="point">
-   </div>
+
 
 
 
 	  <h1> SCHIFFE VERSENKEN!</h1>
-	  <h3>Spieler1: </h3>
+	  <h3>Spieler: </h3>
 	  <div id="ausgabeSpieler1"></div>
 
 
-	  <h3>Spieler2: </h3>
+	  <h3>Gegner: </h3>
 	  <div id="ausgabeSpieler2"></div>
 
 
@@ -98,7 +87,7 @@
 				  </div>
 				  <!-- ersten Spieler hinzufügen -->
 				  <div class="modal-body">
-					  <div>Spieler 1 hinzufügen</div>
+					  <div>Spieler hinzufügen</div>
 					  <div>
 						  <div class="input-group">
 							  <span class="input-group-addon"></span>
@@ -108,11 +97,11 @@
 				  </div>
 				  <!--zweiter SPieler hinzufügen-->
 				  <div class="modal-body">
-					  <div>Spieler 2 hinzufügen</div>
+					  <div>Gegner hinzufügen</div>
 					  <div>
 						  <div class="input-group">
 							  <span class="input-group-addon"></span>
-							  <input id="nameSpieler2" type="text" class="form-control" placeholder="Name">
+							  <input id="Gegner" type="text" class="form-control" placeholder="Name">
 						  </div>
 					  </div>
 
