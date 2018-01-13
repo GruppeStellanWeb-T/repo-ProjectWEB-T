@@ -42,39 +42,26 @@
 		  <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="erneutSpielerEingeben()">Spieler ändern</button>
 	  </div>
     <div class="myButtonChange">
-		  <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="loadHighScore()">HighScore anzeigen</button>
-	  </div>
-
-    <!-- <div class="myButtonChange">
-      <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" class ="input-group" onclick="fire()" >fire</button>
-    </div>
--->
-
-    <div class="myButtonChange">
      <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="fire()">Fire</button>
    </div>
 
    <div class="myButtonChange">
-    <button id="neuButton" type="button" class="myButtonYellow btn btn-outline-success" onclick="setHighscore">highscore setzen</button>
+    <button id="getHighscore" type="button" class="myButtonYellow btn btn-outline-success" onclick="getHighscore()">highscore anzeigen</button>
   </div>
 
+  <div class="myButtonChange">
+   <button id="getEnemy" type="button" class="myButtonYellow btn btn-outline-success" onclick="findEnemy()">Gegner finden</button>
+ </div>
 
 
 
-	  <h1> SCHIFFE VERSENKEN!</h1>
-	  <h3>Spieler: </h3>
-	  <div id="ausgabeSpieler1"></div>
+	  <h1 style="color:rgb(133, 179, 38)"> SCHIFFE VERSENKEN!</h1>
+	  <h4 style="color:rgb(133, 179, 38)">Spieler: </h4>
+	  <div style="color:green" id="ausgabeSpieler1"></div>
 
 
-	  <h3>Gegner: </h3>
-	  <div id="ausgabeSpieler2"></div>
-
-
-	  <div id="gameBoardAusgabe">
-
-
-
-	  </div>
+	  <h4 style="color:rgb(133, 179, 38)">Gegner: </h4>
+	  <div style="color:green" id="ausgabeSpieler2"></div>
 
 	  <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-dialog modal-lg">
@@ -83,9 +70,8 @@
 					  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						  <span aria-hidden="true">&times;</span>
 					  </button>
-					  <h4 class="modal-title" id="myModalLabel">Spieler</h4>
+					  <h6 class="modal-title" id="myModalLabel">Spieler</h6>
 				  </div>
-				  <!-- ersten Spieler hinzufügen -->
 				  <div class="modal-body">
 					  <div>Spieler hinzufügen</div>
 					  <div>
@@ -95,26 +81,26 @@
 						  </div>
 					  </div>
 				  </div>
-				  <!--zweiter SPieler hinzufügen-->
 				  <div class="modal-body">
-					  <div>Gegner hinzufügen</div>
-					  <div>
-						  <div class="input-group">
-							  <span class="input-group-addon"></span>
-							  <input id="Gegner" type="text" class="form-control" placeholder="Name">
-						  </div>
-					  </div>
-
 					  <div class="myButtonModal">
-						  <button onclick="spielerSpeichern()" type="button" class="myButtonYellow btn btn-outline-success">hinzufügen</button>
+						  <button onclick="spielerSpeichern()" type="button" class="myButtonYellow btn btn-outline-success" >hinzufügen</button>
 					  </div>
 				  </div>
 			  </div>
 		  </div>
 	  </div>
+    <h5 style="color:rgb(133, 179, 38)">Winner</h5><div id="showWinner"></div>
+    <h5 style="color:rgb(133, 179, 38)">new HighScore</h5><div id="showWinnerHighscore"></div>
+
+
+
+
+
+
+
+
 	  <div id="gb1"></div>
 	  <div id="gb2"></div>
-
 
 
 	  <!-- jQuery first, then Tether, then Bootstrap JS. -->

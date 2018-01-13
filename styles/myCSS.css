@@ -13,6 +13,17 @@ color:rgb(226, 187, 89) !important;
   margin:0 auto;
 }
 
+.wordWrapper{
+  clear:both;
+}
+
+.namePlacementRight{
+  float:left;
+}
+
+.toolbar{
+  float:left;
+}
 .myButtonModal{
   margin: 0 auto;
   margin-top:20px;

@@ -1,14 +1,14 @@
 
+//Globale Variablen, sollen die in diesem Scope sein?
 let socket = io();
 
 
-//Empfänger
-// socket.on('fire', function(msg){
-//       console.log(msg);
-//     });
+
 
 socket.on('coordinateFire', function(msg){
           console.log('Antwort vom Server: ' + JSON.stringify(msg));
+          postShoot(msg);
+          shipCiao(msg);
           });
 socket.on('putBorad', function(msg){
         console.log(msg);
@@ -16,30 +16,59 @@ socket.on('putBorad', function(msg){
         // socket.send(fieldCopy);
         });
 socket.on('putGamer', function(msg){
-        console.log(msg);
+        if(msg['enemyName'] != undefined){
+          gegner = msg['enemyName'];
+          document.getElementById('ausgabeSpieler2').innerHTML = gegner;
+        }
+        if(msg['enemyName'] == gegner){
+          gegner = msg['enemyName'];
+          var x = msg['enemyName'];
+          document.getElementById('ausgabeSpieler2').innerHTML = x;
+          console.log("Gegner: "+gegner);
+        }
         });
 socket.on('getHighscore', function(msg){
-        console.log(msg);
+        console.log("skript: "+JSON.stringify(msg));
+        highScore = msg['highscore'];
+        console.log("skript: "+ JSON.stringify(highScore));
+        document.getElementById('showWinnerHighscore').innerHTML = JSON.stringify(highScore);
         });
-socket.on('sendHitMessage', function(msg){
-        console.log(msg);
-        });
+
 socket.on('connection', function(){
     console.log(io().id);
 });
-socket.on('placeCell', function(msg){
+socket.on('closeGame', function(){
+
+});
+socket.on('getEnemy', function(msg){
     console.log(msg);
+});
+socket.on('beginner', function(msg){
+    console.log("beginner "+msg);
+    beginner=msg;
+});
+socket.on('wait', function(msg){
+  alert(msg['msg']);
+});
+socket.on('sendWinnerAndHighscore', function(msg){
+
+      document.getElementById('showWinner').innerHTML = msg['winner']+" Score: "+msg['score'];
+      document.getElementById('showWinnerHighscore').innerHTML = JSON.stringify(msg['highscore']);
+      console.log("vor getHighscore() in sendWinnerAndHighscore "+ msg['winner']);
+      alert("ALLE SCHIFFE WURDEN VERSENKT\nSERVER IS SHUTTING DOWN");
+      // getHighscore();
+      // disconnect();
+});
+socket.on('putNewName', function(){
+
 });
 
 
 
 let spieler1;
-let playerName = {
-  name: "",
-  hash: ""
-}
+let spieler1Counter = 30;
+
 let gegner;
-let curPlayer2;
 let fireROW;
 let fireCOLUMN;
 
@@ -49,54 +78,68 @@ let gameBoard_My;
 
 let gameBoard_Enemy;
 let positionMemory;
-let newHighScore;
-let currentHighScore;
+let highScore;
+let arrayOfCoordinatesToSend=[];
+let beginner;
 
-let playername = "";
+let uboot = {
+  'size':2,
+  'counter':0,
+}
+
+let zerstoerer = {
+  'size':3,
+  'counter':0,
+}
+
+let kreuzer = {
+  'size':4,
+  'counter':0,
+}
+let flugtraeger = {
+  'size':5,
+  'counter':0,
+
+}
+
+let coordinateFire = {
+    'row' : "",
+    'column': "",
+    'name' : spieler1
+};
+
+
+
 let playCoordinate = {
   'row': "",
   'column' : ""
 }
 
 const fieldCopy =[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+
+let arrayOfShips = [[uboot],[uboot],[uboot],[uboot],[zerstoerer],[zerstoerer],[zerstoerer],[kreuzer],[kreuzer],[flugtraeger]];
 
 
-const highscoreJson = {
-  "player":this.playername,
-  "score": 20
-};
 
-const coordinateFire = {
-    'row' : "",
-    'column': "",
-
-};
-
-var ships = {
-  schlachtschiff: 5,
-  kreuzer: 4,
-  zerstörer: 3,
-  uboote: 2,
-  schiffart: function() {return 1;}
-};
-
-var coordinatesInTableROW = [];
-var coordinatesInTableCOLUMN = [];
-
-
-//Warum JQuery?
 $(document).ready(function(){
     $("#myModal").modal('show');
+    $('winnerModal').modal('hide');
+
 });
+
+function findEnemy(){
+  socket.emit('getEnemy', {'name' : spieler1});
+  socket.emit('beginner', null);
+}
 
 function spielerSpeichern(){
 
@@ -111,12 +154,20 @@ function spielerSpeichern(){
         return s.split("").reduce(function(a,b){a=(((a<<5)-a)*Math.floor((Math.random() * 10)))+b.charCodeAt(0); return a&a},0);
       }
       spieler1 = document.getElementById('nameSpieler1').value;
+      console.log(arrayOfShips[0]['coordinates']);
+      console.log(arrayOfShips);
+
+      document.getElementById('ausgabeSpieler1').innerHTML = spieler1;
       hashCode_ID = hashCode(spieler1);
       //Gamer an den Server schicken
       socket.emit('putGamer', {
                                 'name' : spieler1,
                                 'board' : fieldCopy,
-                                'ID'  : hashCode_ID
+                                'ID'  : hashCode_ID,
+                                'counter' : spieler1Counter,
+                                'score' : 0,
+                                'ships' : arrayOfShips,
+                                'coordinates' : arrayOfCoordinatesToSend
                               });
 
       $("#myModal").modal('hide');
@@ -125,14 +176,33 @@ function spielerSpeichern(){
 
 
 function erneutSpielerEingeben(){
-  //Warum?
-  alert("lalala");
-	//Warum JQuery?
+  var oldGamer = spieler1;
   $("#myModal").modal('show');
-
+  var newGamer = spieler1;
+  socket.emit('putNewName', {
+                              'oldName' : oldGamer,
+                              'newName' : newGamer
+                            });
 }
 
-//um Zellen Koordinaten zu speichern
+function postShoot(msg){
+  var post = msg;
+  var row = post['row'];
+  var column = post['column'];
+
+  if(msg['hit'] == true){
+    markCellWithX(row,column,false,true);
+  }else{
+    markCellWithX(row,column,false,false);
+  }
+
+}
+function shipCiao(msg){
+  if(msg['sinked'] == true){
+    alert("SCHIFF CIAO !!!!")
+  }
+}
+
 function selectSquare(obj) {
   coordinateFire.row = obj.dataset.x;
   console.log(obj.dataset.x);
@@ -142,73 +212,86 @@ function selectSquare(obj) {
   console.log('Fire name: '+coordinateFire['name']);
 
 }
-//schiesst auf den Gegner
 function fire(){
-  socket.emit('coordinateFire', coordinateFire);
+  if(gegner != undefined || gegner != null){
+    socket.emit('coordinateFire', coordinateFire);
+  }else{
+    alert("erst Gegner finden, dann Koordinaten eingeben und feuern !!!");
+  }
 }
-//erstellen des DOM Baumes/Boards
+
+
 function makeBoard(boardID,size) {
+
   if(boardID=='gb1'){
-    //reference, where to put field
     this.gameBoard_My = document.getElementById(boardID);
   }else{
     this.gameBoard_Enemy = document.getElementById(boardID);
   }
- 	//create elements <table> and a <tbody>
+
+
  	var tbl = document.createElement('table');
  	var tblBody = document.createElement('tbody');
- 	//create cells
+
  	for ( var i = 0; i < size; i++) {
  		var row = document.createElement('tr');
-    for ( var j = 0; j < size; j++) {
+
+ 		for ( var j = 0; j < size; j++) {
  			var cell = document.createElement('td');
+      cell.style.width = '500px';
       cell.dataset.x = i;
       cell.dataset.y = j;
       cell.dataset.player = boardID;
       cell.setAttribute("onclick", "selectSquare(this)");
-      cell.appendChild(cellText);
+
+ 			var cellText = document.createTextNode(" "+i+"|"+j+" ");
+ 			cell.appendChild(cellText);
  			row.appendChild(cell);
  		}
  		tblBody.appendChild(row);
  	}
  	tbl.appendChild(tblBody);
+
   if(boardID=='gb1'){
     this.gameBoard_My.appendChild(tbl);
   }else{
     this.gameBoard_Enemy.appendChild(tbl);
   }
 	tbl.setAttribute('border','2');
+
+
 }
 
-//setzt die Schiffe für die Ausgabe
+
 function setShips(){
+  //alert("HIER BIN ICH IN SETSHIPS");
   this.positionMemory = new Array();
   if(this.positionMemory[0] == undefined) {
-    //arrays mit den Größen der Schiffe. Kann man aber umstellen auf
-    //Json- Bezug. Ist vielleicht schöner. Speicher wird damit gespart
-    let arrayOfShips = [2,2,2,2,5,4,4,3,3,3];
-    //Schleife die bei jedem Schritt gültige Koordinaten stellt die dann durch
-    //putBattleshipsInTable() in die Tabelle eingefügt werden.
-    //@variable jsonCoordinates returned ein Json mit gültigen anfangs Koordinaten
-    for(var i=0;i<1;i++){
-      let jsonCoordinates =  makeCoordinates(arrayOfShips[i]);
+    let arrayOfShipsSize = [5,4,4,3,3,3,2,2,2,2];
+    for(var i=0;i<10;i++){
+
+      let jsonCoordinates =  makeCoordinates(arrayOfShipsSize[i]);
+      console.log("Koordinaten erhalten die Gültig sind.\nSchiff wird eingefügt:"+JSON.stringify(jsonCoordinates));
       putBattleshipsInTable(jsonCoordinates);
+
     }
   }
+
 }
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 //Funktion die Koordinaten, durch Zufallszahlen erstellt
 function makeCoordinates(shipSize){
-  //prüft ob die Anfangskoordinaten gültig sind und fragt ab ob horizontal
-  //oder vertikal eingefügt werden soll. Funktion checkPositionIsOK ist der
-  //letzte Aufruf zum Bestätigen
+
   var isOK = false;
   var freeCoordinates = null;
   while(isOK == false) {
     //Zufalllsazheln werden erstellt
-    var randomCOLUMN = Math.floor((Math.random() * 10));
-    var randomROW = Math.floor((Math.random() * 10));
-    //erstellt horizontal oder vertikal Positionierung
+    var randomCOLUMN = getRandomInt(0,9);
+    var randomROW = getRandomInt(0,9);
+    console.log("Zufallszahlen:  ->  rowRand:"+randomROW+" columnRand:"+randomCOLUMN);
     let direction = checkDirection();
 
 
@@ -219,12 +302,9 @@ function makeCoordinates(shipSize){
             var puttingOK = checkPositionIsOK(randomROW, randomCOLUMN, shipSize, 0);
           }
 
-          //abfrage was returned wird. Bei "True" von puttingOK wird das gültige JSON
-          //returned. Bei "false", geht die Funktion in die Rekursion und erstellt
-          //wieder neue Zufalsszahlen
           if(puttingOK == true){
             this.positionMemory.push(new Array(randomROW,randomCOLUMN));
-            //JSON wird gefüllt mir Werten aus der Funktion makeCoordinates
+
               freeCoordinates = {
                             row: randomROW,
                             column: randomCOLUMN,
@@ -238,124 +318,211 @@ function makeCoordinates(shipSize){
   return freeCoordinates;
 }
 
-//Funktion prüft ob Felder frei zu den passenden Anfangskoordinaten sind
-//Geht mit zwe for-loops durch die Zeilen und Spalten und ruft dabei isFree() auf.
-//@return flag, gibt die Zelle an makeCoordinates() frei, als Startpunkt der
-//Positionierung
 function checkPositionIsOK(rowNumber, columnNumber, shipSize, direction){
-    //wenn Startkoordinaten frei und aussenrum alles frei ist kann angefangen werden,
-    //zu setzen
-    if(isFree(rowNumber, columnNumber) && checkAround(rowNumber, columnNumber)){
-      //für horizontale Positionierung
-      if(direction == 1){
-          var flag = true;
-          for(var i=0;i<shipSize;i++){
-            if(isFree(rowNumber, columnNumber+i) && checkAround(rowNumber, columnNumber+i)){
-                        flag=true;;
+    console.log("in checkPosition   =>   row:"+rowNumber+"column:"+columnNumber+" size:"+shipSize+" direction:"+direction);
+    //sagt nein wenn Zelle schon belegt ist
+    if(isFree(rowNumber,columnNumber) == true){
+        if(direction == 1){
+                var flag = false;
+                for(var i=0;i<shipSize;i++){
+                  if(isFree(rowNumber, columnNumber+i) == true ){
+                          if(checkAround(rowNumber, columnNumber+i) ==true) {
+                                if(rowNumber+i>=0 && rowNumber+i<=9 && columnNumber+i>=0 && columnNumber+i<=9){
+                                    flag=true;
+                                    }else{
+                                      flag=false;
+                                      break;
+                                    }
+                            }else{
+                            console.log("koordinaten nicht übernommen. row:");
+                            flag=false;
+                            break;
+                            }
                   }else{
-                        flag=false;
+                    flag=false;
+                    break;
                   }
-          }
-          return flag;
-      }
-      //für vertikale Positionierung
-      else{
-        var flag = true;
-        for(var i=0;i<shipSize;i++){
-      //    alert("aufruf für flag 2. DURCHLAUF: "+i);
-          if(isFree(rowNumber+i, columnNumber) && checkAround(rowNumber+i, columnNumber)){
-                        flag=true;
-                }else{
-                        flag=false;
                 }
+              return flag;
+        }else{
+              var flag = true;
+              for(var i=0;i<shipSize;i++){
+                if(isFree(rowNumber+i, columnNumber) == true){
+                  if(checkAround(rowNumber+i, columnNumber) == true) {
+                    if(rowNumber+i>=0 && rowNumber+i<=9 && columnNumber+i>=0 && columnNumber+i<=9){
+                    flag=true;
+                    }else{
+                    flag=false;
+                    break;
+                    }
+                  }else{
+                    console.log("koordinaten nicht übernommen");
+                    flag=false;
+                    break;
+                  }
+                }else{
+                  flag=false;
+                  break;
+                }
+              }
+              return flag;
+          }
         }
-        return flag;
-      }
-    }else{
-      return false;
     }
-}
 
-//Funktion um einzelne Zellen durchzulaufen und sie auf "leere" bzw. "Vollheit"
-//zu prüfen. Alert("FEHLER IN ISFREE") nur zu Testzwecken.
 function isFree(rowNumber, columnNumber){
-  if(rowNumber<0 || rowNumber>9 || columnNumber<0 || columnNumber>9){
+  if(rowNumber<0 || rowNumber>9){
+    // console.log("Row nicht im Spielfeld   =>   false");
+    return false;
+  }else if (columnNumber<0 || columnNumber>9) {
+    // console.log("Column nicht im Spielfeld   =>   false");
     return false;
   }
-  if((typeof this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber]) === undefined){
-    alert("hier drinne amk");
-  }else if (typeof this.gameBoard_My.getElementsByTagName('table')[0] === undefined) {
-    alert("hier drinne amk");
-  }
+
+
+    if((typeof this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber]) == undefined){
+      alert("hier drinne amk");
+    }else if (typeof this.gameBoard_My.getElementsByTagName('table')[0] === undefined) {
+      alert("hier drinne amk");
+    }
   let rowElement = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber];
-  if(rowElement != undefined) {
-    //alert("RETURNED TRUE AUS ISFREE");
+  if(rowElement == undefined) {
+        // console.log("in isFree   =>  return: false");
+          return false;
+  }else{
     if(rowElement.lastChild.data.includes("X") || rowElement.firstChild.data.includes("X")){
+      // console.log("Zelle ist belegt   =>   return: false");
       return false;
     }else{
+      // console.log("Zelle ist frei   =>   return: true");
       return true;
     }
-  }else{
-    return false;
   }
 
-//  alert("FEHLER IN ISFREE");
-  //@return null, nur zur Sicherheit. Theoretisch sollte es nicht aufgerufen werden
   return null;
 }
-
-//checkt die Felder um die angepeilte Zelle
+let a=[];
 function checkAround(rowNumber, columnNumber){
   let positionArrayOfCorrectness = [];
   let positionsAroundCell = [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]];
   for(var i=0;i<8;i++){
-        //alert("POSITION CHECKAROUND I:"+i+" ROW:"+(rowNumber + positionsAroundCell[i][0])+" COLUMN:"+(columnNumber + positionsAroundCell[i][1]));
-      //  var currentCell = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber + positionsAroundCell[i][0]].getElementsByTagName('td')[columnNumber + positionsAroundCell[i][1]];
-        if(isFree(rowNumber + positionsAroundCell[i][0], columnNumber + positionsAroundCell[i][1])) {
-                        positionArrayOfCorrectness.push(true);
+        if(isFreeCheckAround(rowNumber + positionsAroundCell[i][0], columnNumber + positionsAroundCell[i][1]) == true) {
+          console.log("AAA:"+JSON.stringify(a));
+
+                        a.push(true);
         }else{
-                        positionArrayOfCorrectness.push(false);
+                      a.push(false);
         }
   }
-  if(positionArrayOfCorrectness.includes(false)){
+  if(JSON.stringify(a).includes(false)){
+    console.log("BBB:"+JSON.stringify(a));
+    a=[];
     return false;
   }else{
+    a=[];
     return true;
   }
 }
 
-//FUNKTION UM DIE TABLLEN MIT DEN SCHIFFEN ZU FÜLLEN
-function putBattleshipsInTable(jsonCoordinates){
-  if(jsonCoordinates.shipDirection == 1){
-      for(var i=0;i<jsonCoordinates.size;i++){
-        markCellWithX(jsonCoordinates.row, jsonCoordinates.column + i);
-      }
+
+
+function isFreeCheckAround(rowNumber, columnNumber){
+  console.log("in isFreeCheckAround   =>   row:" +rowNumber+" column:"+columnNumber);
+  if(rowNumber<0 || rowNumber>9){
+    console.log("in isFreeCheckAround. Row außerhalb des Spielfeldes   =>   true");
+    return true;
+  }else if (columnNumber<0 || columnNumber>9) {
+    console.log("in isFreeCheckAround. Column außerhalb des Spielfeldes   =>   true");
+    return true;
   }
-  //Zellen befüllen die vertikal angeordnet sind (Direction == 0)
-  else{
-    for(var i=0;i<jsonCoordinates.size;i++){
-      markCellWithX(jsonCoordinates.row + i, jsonCoordinates.column);
+
+  if((typeof this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber]) == undefined){
+    alert("hier drinne amk");
+  }else if (typeof this.gameBoard_My.getElementsByTagName('table')[0] === undefined) {
+    alert("hier drinne amk");
+  }
+
+  let rowElement = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber];
+  if(rowElement == undefined) {
+
+          return true;
+  }else{
+    if(rowElement.lastChild.data.includes("X") || rowElement.firstChild.data.includes("X")){
+      console.log("In isFreeCheckAround, belegte Zelle   =   >   return: false,  row:"+rowNumber+" column:"+columnNumber);
+      return false;
+    }else{
+        console.log("In isFreeCheckAround, freie Zelle   =   >   return: true");
+      return true;
     }
   }
-}
-//markiert Zellen im DOM mit X
-function markCellWithX(rowNumber, columnNumber){
-  let cellText = document.createTextNode(" X");
-  if(rowNumber<0 || rowNumber>9 || columnNumber<0 || columnNumber>9){
-    alert("negativeZahl!! row:"+rowNumber+" columnNumber:"+columnNumber);
-  }else{
-    console.log(rowNumber);
-    console.log(columnNumber);
-    let replaceCell = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].lastChild;
-  let tableCell = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].replaceChild(cellText,replaceCell);
-  this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber] = tableCell;
-  fieldCopy[rowNumber][columnNumber] = 1;
-  console.log("fieldKopie: "+fieldCopy[rowNumber][columnNumber]);
-  }
+
+  return null;
 }
 
-//Funktion um die Direction zu erstellen. Erstellt eine Zufallszahl "random", bis 10.
-//bei gerader Zahl ist die Direction hrizontal, ansonsten vertikal
+let counterArray=0;
+
+function putBattleshipsInTable(jsonCoordinates){
+  console.log("in putBattleshipsInTable");
+
+  if(jsonCoordinates.shipDirection == 1){
+    var arrayCurrentShip=[];
+    for(var i=0;i<jsonCoordinates.size;i++){
+      arrayCurrentShip.push(new Array(jsonCoordinates.row, jsonCoordinates.column + i));
+      markCellWithX(jsonCoordinates.row, jsonCoordinates.column + i);
+    }
+    arrayOfCoordinatesToSend.push(arrayCurrentShip);
+  }
+  else{
+    var arrayCurrentShip=[];
+    for(var i=0;i<jsonCoordinates.size;i++){
+      arrayCurrentShip.push(new Array(jsonCoordinates.row+i, jsonCoordinates.column));
+      markCellWithX(jsonCoordinates.row + i, jsonCoordinates.column);
+    }
+    arrayOfCoordinatesToSend.push(arrayCurrentShip);
+  }
+  counterArray++;
+}
+
+
+
+function markCellWithX(rowNumber, columnNumber, boardID, hit){
+  console.log("in MarkCell");
+  if(boardID != false){
+      let cellText = document.createTextNode(" X");
+      if(rowNumber<0 || rowNumber>9 || columnNumber<0 || columnNumber>9){
+        alert("negativeZahl!! row:"+rowNumber+" columnNumber:"+columnNumber);
+      }else{
+
+      let replaceCell = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].lastChild;
+      let tableCell = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].replaceChild(cellText,replaceCell);
+      this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber] = tableCell;
+      this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].style.backgroundColor = 'rgb(48, 152, 35)';
+      fieldCopy[rowNumber][columnNumber] = 1;
+      }
+  }else{
+    let cellText = document.createTextNode(" X ");
+    if(rowNumber<0 || rowNumber>9 || columnNumber<0 || columnNumber>9){
+      alert("negativeZahl!! row:"+rowNumber+" columnNumber:"+columnNumber);
+    }else{
+
+      if(hit == true){
+            cellText = document.createTextNode(" !! ");
+            let replaceCell = this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].lastChild;
+            let tableCell = this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].replaceChild(cellText,replaceCell);
+            this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber] = tableCell;
+            this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].style.backgroundColor = 'rgb(158, 181, 24)';
+            // fieldCopy[rowNumber][columnNumber] = 1;
+      }else{
+        cellText = document.createTextNode(" X ");
+        let replaceCell = this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].lastChild;
+        let tableCell = this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].replaceChild(cellText,replaceCell);
+        this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber] = tableCell;
+        this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].style.backgroundColor = 'rgb(48, 152, 35)';
+      }
+    }
+  }
+
+}
 function checkDirection(){
   var random = Math.floor((Math.random() * 10) + 1);
   if((random%2) == 0){
@@ -365,8 +532,15 @@ function checkDirection(){
   }
 }
 
-//Funktion um befüllte Zellen zu speichern um so das Positionieren zu vereinfachen
-//Hier werden natürlich nur die Anfangskoordinaten gespeichert.
+function getHighscore(){
+  socket.emit('getHighscore', {'name' : spieler1});
+}
+
+function disconnect(){
+  console.log("UND CIAO");
+  socket.emit('closeGame', {});
+
+}
 function isInMemoryOfPositions(rowNumber, columnNumber){
 
 var isInside = false;
@@ -376,25 +550,32 @@ var isInside = false;
     {
       if((this.positionMemory[i][j] == rowNumber) && (this.positionMemory[i][j+1] == columnNumber)){
               isInside=true;
-            //  alert("memory besetzt");
               return true;
       }else{
         isInside=false;
       }
     }
   }
-
   return isInside;
 }
 
-/**
- * ENDE DER FUNKTIONEN FÜR AUTOMATISCHES AUFLADEN DER SCHIFFE
- */
+// var xhr = new XMLHttpRequest();
+//    xhr.open("GET", /highScore);
+//    xhr.responseType = "json";
+//    xhr.onload = function(){
+//      if (this.readyState == 4 && this.status == 200) {
+//          console.log("Gut gegangen");
+//          console.log(xhr.response);
+//          showHighscore(getBestScores(xhr.response),5);
+//      } else{
+//        console.log("Schief gegangen");
+//      }
+//    };
+//    xhr.send();
 
-//Call-Funktion die auftaucht sobald die Seite fertig geladen ist. SetShips
+
 window.onload = function () {
 	makeBoard("gb1",10);
 	makeBoard("gb2",10);
-  //Automatische Generieren der Schiffe in gameBoard_My
   setShips();
 };
