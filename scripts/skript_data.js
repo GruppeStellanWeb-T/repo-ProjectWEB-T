@@ -1,20 +1,22 @@
 
-//Globale Variablen, sollen die in diesem Scope sein?
+/*
+Battleship für WEB-T
+Abgabe von Can Arsoy an Martina Kraus
+@Autor, Can Arsoy & Stella Nesser (29 Zeilen)
+ */
+
+
 let socket = io();
-
-
-
-
 socket.on('coordinateFire', function(msg){
           console.log('Antwort vom Server: ' + JSON.stringify(msg));
           postShoot(msg);
           shipCiao(msg);
           });
+
 socket.on('putBorad', function(msg){
         console.log(msg);
-        // console.log(this.socket.sessionid);
-        // socket.send(fieldCopy);
         });
+
 socket.on('putGamer', function(msg){
         if(msg['enemyName'] != undefined){
           gegner = msg['enemyName'];
@@ -27,6 +29,7 @@ socket.on('putGamer', function(msg){
           console.log("Gegner: "+gegner);
         }
         });
+
 socket.on('getHighscore', function(msg){
         console.log("skript: "+JSON.stringify(msg));
         highScore = msg['highscore'];
@@ -37,50 +40,51 @@ socket.on('getHighscore', function(msg){
 socket.on('connection', function(){
     console.log(io().id);
 });
+
 socket.on('closeGame', function(){
 
 });
+
 socket.on('getEnemy', function(msg){
     console.log(msg);
 });
+
 socket.on('beginner', function(msg){
     console.log("beginner "+msg);
     beginner=msg;
 });
+
 socket.on('wait', function(msg){
   alert(msg['msg']);
 });
-socket.on('sendWinnerAndHighscore', function(msg){
 
-      document.getElementById('showWinner').innerHTML = msg['winner']+" Score: "+msg['score'];
+socket.on('sendWinnerAndHighscore', function(msg){
+      document.getElementById('showWinner').innerHTML = msg['winner']+" mit dem Score:"+msg['score'];
       document.getElementById('showWinnerHighscore').innerHTML = JSON.stringify(msg['highscore']);
       console.log("vor getHighscore() in sendWinnerAndHighscore "+ msg['winner']);
-      alert("ALLE SCHIFFE WURDEN VERSENKT\nSERVER IS SHUTTING DOWN");
-      // getHighscore();
-      // disconnect();
+      $('#winnerModal').modal('show');
+      disconnect();
 });
-socket.on('putNewName', function(){
 
+socket.on('putNewName', function(){
 });
 
 
 
 let spieler1;
 let spieler1Counter = 30;
-
 let gegner;
 let fireROW;
 let fireCOLUMN;
-
 let hashCode_ID;
-
 let gameBoard_My;
-
 let gameBoard_Enemy;
 let positionMemory;
 let highScore;
 let arrayOfCoordinatesToSend=[];
 let beginner;
+let arrayOfCoordinatesAll=[];
+let counterArray=0;
 
 let uboot = {
   'size':2,
@@ -108,8 +112,6 @@ let coordinateFire = {
     'name' : spieler1
 };
 
-
-
 let playCoordinate = {
   'row': "",
   'column' : ""
@@ -132,8 +134,6 @@ let arrayOfShips = [[uboot],[uboot],[uboot],[uboot],[zerstoerer],[zerstoerer],[z
 
 $(document).ready(function(){
     $("#myModal").modal('show');
-    $('winnerModal').modal('hide');
-
 });
 
 function findEnemy(){
@@ -142,24 +142,17 @@ function findEnemy(){
 }
 
 function spielerSpeichern(){
-
-  // die Verzweigung fehlt noch, bei der ein Alert ausgegeben wird wenn der Name gleih ist
     if(document.getElementById('nameSpieler1') == document.getElementById('nameSpieler2')){
       alert("Spieler bitte unterschiedlich nennen");
       $('myModal').modal('show');
       erneutSpielerEingeben();
-
     }else{
       function hashCode(s){
         return s.split("").reduce(function(a,b){a=(((a<<5)-a)*Math.floor((Math.random() * 10)))+b.charCodeAt(0); return a&a},0);
       }
       spieler1 = document.getElementById('nameSpieler1').value;
-      console.log(arrayOfShips[0]['coordinates']);
-      console.log(arrayOfShips);
-
       document.getElementById('ausgabeSpieler1').innerHTML = spieler1;
       hashCode_ID = hashCode(spieler1);
-      //Gamer an den Server schicken
       socket.emit('putGamer', {
                                 'name' : spieler1,
                                 'board' : fieldCopy,
@@ -169,33 +162,35 @@ function spielerSpeichern(){
                                 'ships' : arrayOfShips,
                                 'coordinates' : arrayOfCoordinatesToSend
                               });
-
       $("#myModal").modal('hide');
     }
 }
 
-
 function erneutSpielerEingeben(){
-  var oldGamer = spieler1;
-  $("#myModal").modal('show');
-  var newGamer = spieler1;
-  socket.emit('putNewName', {
-                              'oldName' : oldGamer,
-                              'newName' : newGamer
-                            });
+  if(gegner==undefined){
+      var oldGamer = spieler1;
+      $("#myModal").modal('show');
+      document.getElementById('ausgabeSpieler1').innerHTML = spieler1;
+      var newGamer = spieler1;
+      socket.emit('putNewName', {
+                                  'oldName' : oldGamer,
+                                  'newName' : newGamer
+                                });
+  }else{
+    $("#myModal").modal('hide');
+    alert("Sie haben schon einen Gegner gefunden\n\nName kann nicht erneut eingegeben werden")
+  }
 }
 
 function postShoot(msg){
   var post = msg;
   var row = post['row'];
   var column = post['column'];
-
   if(msg['hit'] == true){
     markCellWithX(row,column,false,true);
   }else{
     markCellWithX(row,column,false,false);
   }
-
 }
 function shipCiao(msg){
   if(msg['sinked'] == true){
@@ -210,7 +205,6 @@ function selectSquare(obj) {
   console.log(obj.dataset.y);
   coordinateFire['name'] = spieler1;
   console.log('Fire name: '+coordinateFire['name']);
-
 }
 function fire(){
   if(gegner != undefined || gegner != null){
@@ -220,22 +214,16 @@ function fire(){
   }
 }
 
-
 function makeBoard(boardID,size) {
-
   if(boardID=='gb1'){
     this.gameBoard_My = document.getElementById(boardID);
   }else{
     this.gameBoard_Enemy = document.getElementById(boardID);
   }
-
-
  	var tbl = document.createElement('table');
  	var tblBody = document.createElement('tbody');
-
  	for ( var i = 0; i < size; i++) {
  		var row = document.createElement('tr');
-
  		for ( var j = 0; j < size; j++) {
  			var cell = document.createElement('td');
       cell.style.width = '500px';
@@ -243,25 +231,22 @@ function makeBoard(boardID,size) {
       cell.dataset.y = j;
       cell.dataset.player = boardID;
       cell.setAttribute("onclick", "selectSquare(this)");
-
  			var cellText = document.createTextNode(" "+i+"|"+j+" ");
  			cell.appendChild(cellText);
+      cell.style.color = 'rgb(154, 236, 21)';
  			row.appendChild(cell);
  		}
  		tblBody.appendChild(row);
  	}
  	tbl.appendChild(tblBody);
-
   if(boardID=='gb1'){
     this.gameBoard_My.appendChild(tbl);
   }else{
     this.gameBoard_Enemy.appendChild(tbl);
   }
 	tbl.setAttribute('border','2');
-
-
+  tbl.style.backgroundColor = 'rgb(3, 4, 3)';
 }
-
 
 function setShips(){
   //alert("HIER BIN ICH IN SETSHIPS");
@@ -269,42 +254,33 @@ function setShips(){
   if(this.positionMemory[0] == undefined) {
     let arrayOfShipsSize = [5,4,4,3,3,3,2,2,2,2];
     for(var i=0;i<10;i++){
-
       let jsonCoordinates =  makeCoordinates(arrayOfShipsSize[i]);
       console.log("Koordinaten erhalten die Gültig sind.\nSchiff wird eingefügt:"+JSON.stringify(jsonCoordinates));
       putBattleshipsInTable(jsonCoordinates);
-
     }
   }
-
 }
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-//Funktion die Koordinaten, durch Zufallszahlen erstellt
-function makeCoordinates(shipSize){
 
+function makeCoordinates(shipSize){
   var isOK = false;
   var freeCoordinates = null;
   while(isOK == false) {
-    //Zufalllsazheln werden erstellt
     var randomCOLUMN = getRandomInt(0,9);
     var randomROW = getRandomInt(0,9);
     console.log("Zufallszahlen:  ->  rowRand:"+randomROW+" columnRand:"+randomCOLUMN);
     let direction = checkDirection();
-
-
   	if(isInMemoryOfPositions(randomROW,randomCOLUMN) == false){
           if(direction==1){
             var puttingOK = checkPositionIsOK(randomROW, randomCOLUMN, shipSize, 1);
           }else{
             var puttingOK = checkPositionIsOK(randomROW, randomCOLUMN, shipSize, 0);
           }
-
           if(puttingOK == true){
             this.positionMemory.push(new Array(randomROW,randomCOLUMN));
-
               freeCoordinates = {
                             row: randomROW,
                             column: randomCOLUMN,
@@ -319,8 +295,6 @@ function makeCoordinates(shipSize){
 }
 
 function checkPositionIsOK(rowNumber, columnNumber, shipSize, direction){
-    console.log("in checkPosition   =>   row:"+rowNumber+"column:"+columnNumber+" size:"+shipSize+" direction:"+direction);
-    //sagt nein wenn Zelle schon belegt ist
     if(isFree(rowNumber,columnNumber) == true){
         if(direction == 1){
                 var flag = false;
@@ -334,7 +308,6 @@ function checkPositionIsOK(rowNumber, columnNumber, shipSize, direction){
                                       break;
                                     }
                             }else{
-                            console.log("koordinaten nicht übernommen. row:");
                             flag=false;
                             break;
                             }
@@ -356,7 +329,6 @@ function checkPositionIsOK(rowNumber, columnNumber, shipSize, direction){
                     break;
                     }
                   }else{
-                    console.log("koordinaten nicht übernommen");
                     flag=false;
                     break;
                   }
@@ -372,98 +344,72 @@ function checkPositionIsOK(rowNumber, columnNumber, shipSize, direction){
 
 function isFree(rowNumber, columnNumber){
   if(rowNumber<0 || rowNumber>9){
-    // console.log("Row nicht im Spielfeld   =>   false");
     return false;
   }else if (columnNumber<0 || columnNumber>9) {
-    // console.log("Column nicht im Spielfeld   =>   false");
     return false;
   }
-
-
-    if((typeof this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber]) == undefined){
-      alert("hier drinne amk");
-    }else if (typeof this.gameBoard_My.getElementsByTagName('table')[0] === undefined) {
-      alert("hier drinne amk");
-    }
+  if((typeof this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber]) == undefined){
+    alert("HARD ERROR!!!!!");
+  }else if (typeof this.gameBoard_My.getElementsByTagName('table')[0] === undefined) {
+      alert("HARD ERROR!!!!!");
+  }
   let rowElement = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber];
   if(rowElement == undefined) {
-        // console.log("in isFree   =>  return: false");
           return false;
   }else{
-    if(rowElement.lastChild.data.includes("X") || rowElement.firstChild.data.includes("X")){
-      // console.log("Zelle ist belegt   =>   return: false");
+  if(rowElement.lastChild.data.includes("X") || rowElement.firstChild.data.includes("X")){
       return false;
-    }else{
-      // console.log("Zelle ist frei   =>   return: true");
+  }else{
       return true;
-    }
   }
-
+}
   return null;
 }
-let a=[];
+
 function checkAround(rowNumber, columnNumber){
   let positionArrayOfCorrectness = [];
   let positionsAroundCell = [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]];
   for(var i=0;i<8;i++){
         if(isFreeCheckAround(rowNumber + positionsAroundCell[i][0], columnNumber + positionsAroundCell[i][1]) == true) {
-          console.log("AAA:"+JSON.stringify(a));
-
-                        a.push(true);
+                        arrayOfCoordinatesAll.push(true);
         }else{
-                      a.push(false);
+                      arrayOfCoordinatesAll.push(false);
         }
   }
-  if(JSON.stringify(a).includes(false)){
-    console.log("BBB:"+JSON.stringify(a));
-    a=[];
+  if(JSON.stringify(arrayOfCoordinatesAll).includes(false)){
+    arrayOfCoordinatesAll=[];
     return false;
   }else{
-    a=[];
+    arrayOfCoordinatesAll=[];
     return true;
   }
 }
 
-
-
 function isFreeCheckAround(rowNumber, columnNumber){
-  console.log("in isFreeCheckAround   =>   row:" +rowNumber+" column:"+columnNumber);
   if(rowNumber<0 || rowNumber>9){
-    console.log("in isFreeCheckAround. Row außerhalb des Spielfeldes   =>   true");
     return true;
   }else if (columnNumber<0 || columnNumber>9) {
-    console.log("in isFreeCheckAround. Column außerhalb des Spielfeldes   =>   true");
     return true;
   }
-
   if((typeof this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber]) == undefined){
     alert("hier drinne amk");
   }else if (typeof this.gameBoard_My.getElementsByTagName('table')[0] === undefined) {
     alert("hier drinne amk");
   }
-
   let rowElement = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber];
   if(rowElement == undefined) {
-
           return true;
   }else{
     if(rowElement.lastChild.data.includes("X") || rowElement.firstChild.data.includes("X")){
-      console.log("In isFreeCheckAround, belegte Zelle   =   >   return: false,  row:"+rowNumber+" column:"+columnNumber);
       return false;
     }else{
-        console.log("In isFreeCheckAround, freie Zelle   =   >   return: true");
       return true;
     }
   }
-
   return null;
 }
 
-let counterArray=0;
-
 function putBattleshipsInTable(jsonCoordinates){
-  console.log("in putBattleshipsInTable");
-
   if(jsonCoordinates.shipDirection == 1){
     var arrayCurrentShip=[];
     for(var i=0;i<jsonCoordinates.size;i++){
@@ -483,16 +429,12 @@ function putBattleshipsInTable(jsonCoordinates){
   counterArray++;
 }
 
-
-
 function markCellWithX(rowNumber, columnNumber, boardID, hit){
-  console.log("in MarkCell");
   if(boardID != false){
       let cellText = document.createTextNode(" X");
       if(rowNumber<0 || rowNumber>9 || columnNumber<0 || columnNumber>9){
         alert("negativeZahl!! row:"+rowNumber+" columnNumber:"+columnNumber);
       }else{
-
       let replaceCell = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].lastChild;
       let tableCell = this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].replaceChild(cellText,replaceCell);
       this.gameBoard_My.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber] = tableCell;
@@ -504,14 +446,12 @@ function markCellWithX(rowNumber, columnNumber, boardID, hit){
     if(rowNumber<0 || rowNumber>9 || columnNumber<0 || columnNumber>9){
       alert("negativeZahl!! row:"+rowNumber+" columnNumber:"+columnNumber);
     }else{
-
       if(hit == true){
             cellText = document.createTextNode(" !! ");
             let replaceCell = this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].lastChild;
             let tableCell = this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].replaceChild(cellText,replaceCell);
             this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber] = tableCell;
             this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].style.backgroundColor = 'rgb(158, 181, 24)';
-            // fieldCopy[rowNumber][columnNumber] = 1;
       }else{
         cellText = document.createTextNode(" X ");
         let replaceCell = this.gameBoard_Enemy.getElementsByTagName('table')[0].getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[columnNumber].lastChild;
@@ -521,8 +461,8 @@ function markCellWithX(rowNumber, columnNumber, boardID, hit){
       }
     }
   }
-
 }
+
 function checkDirection(){
   var random = Math.floor((Math.random() * 10) + 1);
   if((random%2) == 0){
@@ -542,7 +482,6 @@ function disconnect(){
 
 }
 function isInMemoryOfPositions(rowNumber, columnNumber){
-
 var isInside = false;
   for ( i=0; i<this.positionMemory.length; i++ )
   {
@@ -559,6 +498,12 @@ var isInside = false;
   return isInside;
 }
 
+window.onload = function () {
+	makeBoard("gb1",10);
+	makeBoard("gb2",10);
+  setShips();
+};
+
 // var xhr = new XMLHttpRequest();
 //    xhr.open("GET", /highScore);
 //    xhr.responseType = "json";
@@ -572,10 +517,3 @@ var isInside = false;
 //      }
 //    };
 //    xhr.send();
-
-
-window.onload = function () {
-	makeBoard("gb1",10);
-	makeBoard("gb2",10);
-  setShips();
-};

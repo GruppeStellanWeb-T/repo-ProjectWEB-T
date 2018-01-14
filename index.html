@@ -1,41 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Schiffeversenken Gruppe Stellan</title>
 
     <link type="text/javascript" src="C:\Users\cango\GitHub\repo-ProjectWEB-T\Server">
-    <!-- Für die Websockets -->
-   <!--<script src="/socket.io/socket.io.js"></script>-->
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-    <!-- KEINE ABSOLUTEN PFAD ANGABEN!!!!!!!!!!!
-    <link rel="stylesheet" href="C:\Users\cango\OneDrive\Dokumente\GitHub\STUFF\myCSS.css">
-    -->
     <link rel="stylesheet" href="styles\myCSS.css">
+
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-
-    <!-- SELBER FEHLER!!! KEINE ABSOLUTEN PFADE!!!!
-    <script type="text/javascript" src="C:\Users\cango\OneDrive\Dokumente\GitHub\STUFF\skript_data.js"></script>
-    -->
     <script type="text/javascript" src="scripts\skript_data.js"></script>
-    <!--<script type="text/javascript" src="scripts\highscore2.js"></script>-->
 
-    <!-- Bild reinhauen, darf aber nicht im HEader sein sondern dort wo ich es einfügen will -->
-    <!-- <img src="..." class="img-fluid pull-xs-left"> -->
-
-    <!--Schriftart von GoogleFront-->
     <link href="https://fonts.googleapis.com/css?family=Spectral+SC" rel="stylesheet">
 
   </head>
-
-
-
-
 
   <body>
 	  <div class="myButtonChange">
@@ -53,12 +33,9 @@
    <button id="getEnemy" type="button" class="myButtonYellow btn btn-outline-success" onclick="findEnemy()">Gegner finden</button>
  </div>
 
-
-
 	  <h1 style="color:rgb(133, 179, 38)"> SCHIFFE VERSENKEN!</h1>
 	  <h4 style="color:rgb(133, 179, 38)">Spieler: </h4>
 	  <div style="color:green" id="ausgabeSpieler1"></div>
-
 
 	  <h4 style="color:rgb(133, 179, 38)">Gegner: </h4>
 	  <div style="color:green" id="ausgabeSpieler2"></div>
@@ -89,19 +66,28 @@
 			  </div>
 		  </div>
 	  </div>
-    <h5 style="color:rgb(133, 179, 38)">Winner</h5><div id="showWinner"></div>
-    <h5 style="color:rgb(133, 179, 38)">new HighScore</h5><div id="showWinnerHighscore"></div>
 
+	  <div id="gb1" style="background-color: rgb(133, 179, 38)"></div>
+	  <div id="gb2" style="background-color: rgb(133, 179, 38)"></div>
 
-
-
-
-
-
-
-	  <div id="gb1"></div>
-	  <div id="gb2"></div>
-
+    <div id="winnerModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h6 class="modal-title" id="myModalLabel">GAME OVER</h6>
+          </div>
+          <div class="modal-body">
+              <h5 style="color:rgb(133, 179, 38)">Winner</h5><div id="showWinner"></div>
+          </div>
+          <div class="modal-body">
+                <h5 style="color:rgb(133, 179, 38)">new HighScore</h5><div id="showWinnerHighscore"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
 	  <!-- jQuery first, then Tether, then Bootstrap JS. -->
 	  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>

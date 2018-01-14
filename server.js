@@ -20,13 +20,6 @@ app.get('/BG.jpg', function(req, res) {
 });
 
 
-
-
-
-
-
-
-//JASON Attribute
 let shootCoordinate;
 let player1;
 let player1Name;
@@ -37,23 +30,17 @@ let anzahlGamer = 0;
 let arrayOfCoordinatesAll = [];
 let busted;
 let flagGamer;
-
-
+let sinkedBoolean;
 const highscore = [[],[],[],[],[]];
-
-
 
 
 io.on('connection', function(socket) {
 
-
-  //meinen Gegner
   function shipDown(msg){
     for(var i=0;i<msg['coordinates'].length;i++){
       var vergleichZwei = msg['coordinates'][i];
       console.log("in shipDown: "+vergleichZwei);
       console.log("in shipDown, länge: "+vergleichZwei.length);
-
       for(var j=0;j<vergleichZwei.length;j++){
         var vergleichDrei = vergleichZwei[j]
         console.log("in shipdown: "+vergleichDrei);
@@ -69,7 +56,6 @@ io.on('connection', function(socket) {
     }
   }
 
-  //Gegner Name
   function shipCounter(laenge, name){
     var check=null;
     for(var i=0;i<2;i++){
@@ -78,7 +64,6 @@ io.on('connection', function(socket) {
       }
     }
     for(var i=0;i<gamer[check]['ships'].length;i++){
-
       if ( (gamer[check]['ships'][i][0]['size'] == laenge) && ((gamer[check]['ships'][i][0]['counter']) < (gamer[check]['ships'][i][0]['size']))) {
               console.log("in shipcounter vorher: "+JSON.stringify(gamer[check]['ships']));
               gamer[check]['ships'][i][0]['counter']++;
@@ -87,9 +72,6 @@ io.on('connection', function(socket) {
       }
     }
   }
-
-  let sinkedBoolean;
-
 
   function checkSinked(enem){
     console.log("IN CHECKSINKED");
@@ -114,8 +96,6 @@ io.on('connection', function(socket) {
     }
 }
 
-
-      //name vom Schützen und deine Koordinaten des schusses
       function checkHit(){
         var check = null;
         if(gamer[0] != undefined && gamer[1] != undefined){
@@ -131,26 +111,20 @@ io.on('connection', function(socket) {
           var victimBoard = gamer[check]['board'];
           var shooterX = shootCoordinate['row'];
           var shooterY = shootCoordinate['column'];
-
           if(victimBoard[shooterX][shooterY] == 1){
-            //Gegner
             shipDown(gamer[check]);
             return true;
           }else{
             victimBoard[shooterX][shooterY] == 2;
             return false;
           }
-          // gamer[check]['score']++;
       }
-
-
 
       function checkEnemy(msg){
         var check = null;
         console.log('msg: ' + JSON.stringify(msg));
             if(gamer[0] != undefined && gamer[1] != undefined){
                 for(var i=0;i<2;i++){
-                  // console.log('im loop');
                   if(gamer[i]['name'] != msg['name']){
                       check=i;
                   }
@@ -169,8 +143,6 @@ io.on('connection', function(socket) {
                 check=i;
             }
           }
-
-        console.log('vor if gamer: '+JSON.stringify(gamer[check]));
         if(gamer[check]['counter'] == 0){
           checkHighscore(gamer[check]);
           console.log("in if bei winnerGamer");
@@ -193,12 +165,10 @@ io.on('connection', function(socket) {
         for(var i=0;i<5;i++){
           var highscoreArrayinArray = highscore[i];
           var highscoreValue = highscoreArrayinArray['score']
-
           console.log("im Loop bei checkHighscore()");
           console.log("highscorevalue: "+highscoreValue);
           console.log("Stelle im Array: "+ 1);
           console.log("highscore: "+highscore);
-
           if((msg['score'] < highscoreValue) || (highscoreValue == undefined)){
             console.log('highscore im Server: ' + highscore);
             toPutInHighscore = i;
@@ -206,30 +176,20 @@ io.on('connection', function(socket) {
           }
         }
         highscore.splice(i, 0, gamerData);
-
       }
-
-
-  //PROTOTYP
-  // io.on('connection', function(socket){
-  //   console.log("BITSSSSSCH HIER BIN IHHH");
-  // });
 
   socket.on('beginner', function(){
     console.log("FLAGGAMER:" + flagGamer);
     io.emit('beginner', flagGamer);
   });
 
-
   socket.on('coordinateFire', function(msg){
       if(msg['name'] == flagGamer){
             console.log('in Server bei coordinateFire(): ' + JSON.stringify(msg));
-            //name vom Schützen beinhaltet
             shootCoordinate = msg;
             var accomplishedHit = checkHit(shootCoordinate);
             var check = null;
             for(var i=0;i<2;i++){
-              // console.log('im loop');
               if(gamer[i]['name'] == shootCoordinate['name']){
                   check=i;
               }
@@ -259,7 +219,6 @@ io.on('connection', function(socket) {
                                             });
               console.log('Getroffen? : ' + accomplishedHit+'  Gegner: '+checkEnemy(msg)+'  Shooter: '+shootCoordinate['name']);
             }
-
             var check = null;
             for(var i=0;i<2;i++){
               if(gamer[i]['name'] != msg['name']){
@@ -271,10 +230,8 @@ io.on('connection', function(socket) {
             console.log("vor checkWinner");
             checkWinner(shootCoordinate);
       }else{
-
         socket.emit('wait', {'msg':'warte bis der Gegner geschossen hat'})
       }
-
   });
 
     socket.on('putBoard', function(msg){
@@ -303,31 +260,24 @@ io.on('connection', function(socket) {
       }else{
         socket.emit('putGamer', {'status': false });
       }
-
-
-      //entscheiden wer Spieler1 oder Spieler2 ist
       if(gamer === undefined){
         player1 = JSON.stringify(msg);
       }else{
         player2 = JSON.stringify(msg);
       }
-
-
-
     });
+
     socket.on('getEnemy', function(msg){
-      //Gegner verschicken
       if(anzahlGamer == 2){
         var enemy = checkEnemy(msg);
         console.log('enemy: ' + enemy);
         socket.emit('putGamer', {'enemyName' : enemy});
       }
-      // socket.emit('getHighscore',HighScore);
     });
+
     socket.on('getHighscore', function(msg){
       console.log('im Server bei getHighscore '+ JSON.stringify(highscore));
       socket.emit('getHighscore', {highscore});
-      // socket.emit('getHighscore',HighScore);
     });
 
     socket.on('closeGame', function(msg){
@@ -336,16 +286,11 @@ io.on('connection', function(socket) {
     });
 
     socket.on('sendWinnerAndHighscore', function(msg){
-
     });
+
     socket.on('wait', function(msg){
-
     });
-    socket.on('placeCell', function(msg){
 
-      console.log('message: ' + JSON.stringify(msg));
-      // socket.emit('sendEnemy',{'msg': 'in put_board'})
-    });
     socket.on('putNewName', function(msg){
       var check = null;
       for(var i=0;i<2;i++){
@@ -355,9 +300,9 @@ io.on('connection', function(socket) {
         }
       }
       gamer[check]['name'] = msg['newName'];
-      socket.broadcast.emit('putGamer', {'enemyName' : msg['newName']});
     });
 });
+
 
 http.listen(3000, function(){
   console.log('listening on *:3000.\nWelcome to the BattleShip Server!!\nROCK ON...!');
