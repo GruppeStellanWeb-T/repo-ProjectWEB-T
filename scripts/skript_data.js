@@ -203,6 +203,14 @@ function shipCiao(msg){
   }
 }
 
+function moverO(obj){
+  obj.style.color='rgb(154, 236, 21)';
+}
+
+function mover(obj){
+  obj.style.color = 'red';
+}
+
 function selectSquare(obj) {
   coordinateFire.row = obj.dataset.x;
   console.log(obj.dataset.x);
@@ -236,6 +244,8 @@ function makeBoard(boardID,size) {
       cell.dataset.y = j;
       cell.dataset.player = boardID;
       cell.setAttribute("onclick", "selectSquare(this)");
+      cell.setAttribute("onmouseover","mover(this)");
+      cell.setAttribute("onmouseout", "moverO(this)");
  			var cellText = document.createTextNode(" "+i+"|"+j+" ");
  			cell.appendChild(cellText);
       cell.style.color = 'rgb(154, 236, 21)';
@@ -252,6 +262,9 @@ function makeBoard(boardID,size) {
 	tbl.setAttribute('border','2');
   tbl.style.backgroundColor = 'rgb(3, 4, 3)';
 }
+
+
+
 
 function setShips(){
   //alert("HIER BIN ICH IN SETSHIPS");
