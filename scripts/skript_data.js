@@ -29,7 +29,7 @@ socket.on('putGamer', function(msg){
           console.log("Gegner: "+gegner);
         }
         });
-
+let currentHighscore;
 socket.on('getHighscore', function(msg){
         console.log("skript: "+JSON.stringify(msg));
         highScore = msg['highscore'];
@@ -164,6 +164,11 @@ function spielerSpeichern(){
                               });
       $("#myModal").modal('hide');
     }
+}
+
+function showHighscore(){
+  document.getElementById('showHighscore').innerHTML = JSON.stringify(highScore);
+  $("#highscoreModal").modal('show');
 }
 
 function erneutSpielerEingeben(){
